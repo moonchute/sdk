@@ -29,7 +29,6 @@ export function createStorage({
       if (value === null) {
         storage.removeItem(`${prefix}.${key}`);
       } else {
-        console.log(`${prefix}.${key}`, JSON.stringify(value));
         storage.setItem(`${prefix}.${key}`, JSON.stringify(value));
       }
     },

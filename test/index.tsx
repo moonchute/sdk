@@ -5,6 +5,8 @@ import {
   type RenderHookOptions,
 } from "@testing-library/react";
 import * as React from "react";
+import { WagmiConfig, configureChains, createConfig, mainnet } from "wagmi";
+import { publicProvider } from "wagmi/providers/public";
 import type { ConfigWithQueryClient } from "../src/config";
 import { ChuteConfig } from "../src/context";
 import { setupConfig } from "./utils";
@@ -33,10 +35,23 @@ type Props = { config?: ConfigWithQueryClient } & {
 };
 
 export function wrapper({
-  config = setupConfig({ queryClient }),
+  config = setupConfig({ queryClient, apiKey: "test" }),
   ...rest
 }: Props = {}) {
-  return <ChuteConfig config={config} {...rest} />;
+  const { chains, publicClient, webSocketPublicClient } = configureChains(
+    [mainnet],
+    [publicProvider()]
+  );
+  const wagmiconfig = createConfig({
+    autoConnect: true,
+    publicClient,
+    webSocketPublicClient,
+  });
+  return (
+    <WagmiConfig config={wagmiconfig}>
+      <ChuteConfig config={config} {...rest} />;
+    </WagmiConfig>
+  );
 }
 
 export function renderHook<TResult, TProps>(

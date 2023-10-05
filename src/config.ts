@@ -9,6 +9,7 @@ import type { ClientStorage } from "./storage";
 import { createStorage, noopStorage } from "./storage";
 
 export type CreateConfigParameters = {
+  apiKey: string;
   queryClient?: QueryClient;
   persister?: Persister;
   storage?: ClientStorage;
@@ -18,6 +19,7 @@ export type Data = {};
 
 export type State = {
   data?: Data;
+  apikey?: string;
   error?: Error;
   status: "idle" | "loading" | "success" | "error";
 };
@@ -39,10 +41,14 @@ export class Config {
       storage:
         typeof window !== "undefined" ? window.localStorage : noopStorage,
     }),
+    apiKey,
   }: {
     storage?: ClientStorage;
+    apiKey: string;
   }) {
     this.storage = storage;
+    this.storage.setItem("apikey", apiKey);
+
     let status: State["status"] = "success";
 
     this.store = createStore<
@@ -67,6 +73,11 @@ export class Config {
         )
       )
     );
+    this.store.setState({ apikey: apiKey });
+  }
+
+  get apikey() {
+    return this.store.getState().apikey;
   }
 }
 

@@ -1,0 +1,1 @@
+export { useSmartAccounts } from "./useSmartAccounts";
