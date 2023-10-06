@@ -24,14 +24,13 @@ export async function fetchSmartAccounts({
 }: FetchSmartAccountsArgs): Promise<FetchSmartAccountsResult> {
   let smartAccount: SmartAccount[] | undefined = undefined;
   try {
-    console.log("apikey:", apikey);
     if (!apikey) {
       throw new Error("API key is required");
     }
     const { data } = await axios.get(
       `https://api.moonchute.xyz/account?address=${address}&chainId=${chainId}&apiKey=${apikey}`
     );
-    smartAccount = data;
+    smartAccount = data.smartAccount;
   } catch (err) {}
 
   return { smartAccount };

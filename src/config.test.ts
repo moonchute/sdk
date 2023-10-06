@@ -4,14 +4,14 @@ import { createStorage } from "./storage";
 
 describe("createConfig", () => {
   it("returns config", () => {
-    const config = createConfig({});
+    const config = createConfig({ apiKey: "test" });
     expect(config).toBeInstanceOf(Config);
   });
 
   describe("config", () => {
     describe("storage", () => {
       it("default", () => {
-        const config = createConfig({});
+        const config = createConfig({ apiKey: "test" });
         expect(config.storage).toMatchInlineSnapshot(`
           {
             "getItem": [Function],
@@ -26,6 +26,7 @@ describe("createConfig", () => {
           storage: createStorage({
             storage: window.localStorage,
           }),
+          apiKey: "test",
         });
         expect(config.storage).toMatchInlineSnapshot(`
           {
