@@ -13,7 +13,7 @@ export type ChuteConfigProps = {
   config: Config & { queryClient: QueryClient };
 };
 
-export function ChuteConfig({
+export function MoonChuteConfig({
   children,
   config,
 }: React.PropsWithChildren<ChuteConfigProps>) {

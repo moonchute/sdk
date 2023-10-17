@@ -8,8 +8,8 @@ export type SmartAccount = {
 };
 
 export type FetchSmartAccountsArgs = {
-  address: string;
-  chainId: number;
+  address?: string;
+  chainId?: number;
   apikey: string | undefined;
 };
 
@@ -23,7 +23,11 @@ export async function fetchSmartAccounts({
   apikey,
 }: FetchSmartAccountsArgs): Promise<FetchSmartAccountsResult> {
   let smartAccount: SmartAccount[] | undefined = undefined;
+
   try {
+    if (!address || !chainId) {
+      throw new Error("Address and chainId are required");
+    }
     if (!apikey) {
       throw new Error("API key is required");
     }
@@ -31,7 +35,9 @@ export async function fetchSmartAccounts({
       `https://api.moonchute.xyz/account?address=${address}&chainId=${chainId}&apiKey=${apikey}`
     );
     smartAccount = data.smartAccount;
-  } catch (err) {}
+  } catch (err) {
+    throw err;
+  }
 
   return { smartAccount };
 }

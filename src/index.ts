@@ -1,5 +1,5 @@
 export { useSmartAccounts } from "./hooks";
 
-export { createConfig } from "./config";
+export { createMoonChuteConfig } from "./config";
 
-export { ChuteConfig } from "./context";
+export { MoonChuteConfig } from "./context";

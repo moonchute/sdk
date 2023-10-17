@@ -1,17 +1,17 @@
 import { describe, expect, it } from "vitest";
-import { Config, createConfig } from "./config";
+import { Config, createMoonChuteConfig } from "./config";
 import { createStorage } from "./storage";
 
 describe("createConfig", () => {
   it("returns config", () => {
-    const config = createConfig({ apiKey: "test" });
+    const config = createMoonChuteConfig({ apiKey: "test" });
     expect(config).toBeInstanceOf(Config);
   });
 
   describe("config", () => {
     describe("storage", () => {
       it("default", () => {
-        const config = createConfig({ apiKey: "test" });
+        const config = createMoonChuteConfig({ apiKey: "test" });
         expect(config.storage).toMatchInlineSnapshot(`
           {
             "getItem": [Function],
@@ -22,7 +22,7 @@ describe("createConfig", () => {
       });
 
       it("custom", () => {
-        const config = createConfig({
+        const config = createMoonChuteConfig({
           storage: createStorage({
             storage: window.localStorage,
           }),

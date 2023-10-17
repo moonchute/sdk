@@ -83,7 +83,7 @@ export class Config {
 
 export type ConfigWithQueryClient = Config & { queryClient: QueryClient };
 
-export function createConfig({
+export function createMoonChuteConfig({
   queryClient = new QueryClient({
     defaultOptions: {
       queries: {
