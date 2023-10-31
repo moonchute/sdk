@@ -30,7 +30,7 @@ export function MoonChuteConfig({
 export function useConfig() {
   const config = React.useContext(Context) as Config;
   if (!config) {
-    throw new Error("useConfig must be used within a ChuteConfig");
+    throw new Error("useConfig must be used within a MoonChuteConfig");
   }
   return config;
 }
