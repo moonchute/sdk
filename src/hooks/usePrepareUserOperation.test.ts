@@ -1,10 +1,11 @@
+import type { Abi } from "abitype";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { renderHook } from "../../test";
 import { usePrepareUserOperation } from "./usePrepareUserOperation";
 
 describe("usePrepareUserOperation", () => {
   beforeAll(() => {
-    vi.mock("../actions/getUnsignedUserOpearation", () => ({
+    vi.mock("../actions/getUnsignedUserOperation", () => ({
       getUnsignedUserOperation: vi.fn(() =>
         Promise.resolve({
           userOp: {
@@ -35,9 +36,24 @@ describe("usePrepareUserOperation", () => {
     const account = "0x123456";
     const owner = "0x345678";
     const chainId = 1;
-    const to = "0x456789";
+    const address = "0x456789";
     const value = "0";
-    const calldata = "0x1234";
+    const functionName = "mint";
+    const abi: Abi = [
+      {
+        inputs: [],
+        name: "mint",
+        outputs: [
+          {
+            internalType: "uint256",
+            name: "",
+            type: "uint256",
+          },
+        ],
+        stateMutability: "view",
+        type: "function",
+      },
+    ];
     const isPaymaster = false;
 
     const { result, waitFor } = renderHook(() =>
@@ -45,9 +61,10 @@ describe("usePrepareUserOperation", () => {
         account,
         owner,
         chainId,
-        to,
+        address,
         value,
-        data: calldata,
+        abi,
+        functionName,
         isPaymaster,
       })
     );

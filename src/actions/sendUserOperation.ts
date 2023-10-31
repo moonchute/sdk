@@ -20,6 +20,7 @@ export async function sendUserOperation({
   userOpHash,
   chainId,
   accountType,
+  apikey,
 }: SendUserOperationArgs): Promise<SendUserOperationResult> {
   const walletClient = await getWalletClient();
   if (!walletClient) throw new Error("Wallet client not found");

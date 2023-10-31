@@ -1,5 +1,8 @@
+import { getPublicClient } from "@wagmi/core";
+import type { Abi } from "abitype";
 import axios from "axios";
 import type { Address } from "viem";
+import { encodeFunctionData } from "viem";
 import { userOperationType } from "../types";
 
 export type GetUnsignedUserOperationArgs = {
@@ -7,10 +10,12 @@ export type GetUnsignedUserOperationArgs = {
   owner?: Address;
   chainId: number;
   apikey: string;
-  to: Address;
+  address: Address;
   value: string;
-  data: `0x${string}`;
   isPaymaster: boolean;
+  abi: Abi;
+  functionName: string;
+  args?: any[];
 };
 
 export type GetUnsignedUserOperationResult = {
@@ -25,11 +30,29 @@ export async function getUnsignedUserOperation({
   owner,
   chainId,
   apikey,
-  to,
+  abi,
+  functionName,
+  args,
+  address,
   value,
-  data,
   isPaymaster = true,
 }: GetUnsignedUserOperationArgs): Promise<GetUnsignedUserOperationResult> {
+  const publicClient = getPublicClient({ chainId });
+
+  await publicClient.simulateContract({
+    abi,
+    address,
+    functionName,
+    args,
+    account,
+  });
+
+  const calldata = encodeFunctionData({
+    abi,
+    args,
+    functionName,
+  });
+
   const unsigned_options = {
     method: "POST",
     url: "https://api.moonchute.xyz/userop",
@@ -43,9 +66,9 @@ export async function getUnsignedUserOperation({
           account,
           owner,
           chainId,
-          to,
-          value,
-          data,
+          to: address,
+          value: value || 0,
+          data: calldata,
           isPaymaster,
         },
       ],

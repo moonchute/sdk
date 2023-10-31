@@ -1,9 +1,10 @@
 import * as React from "react";
+import { useAccount, useNetwork } from "wagmi";
 import {
   GetUnsignedUserOperationArgs,
   GetUnsignedUserOperationResult,
   getUnsignedUserOperation,
-} from "../actions/getUnsignedUserOpearation";
+} from "../actions/getUnsignedUserOperation";
 import { useConfig } from "../context";
 import type { QueryConfig, QueryFunctionArgs } from "../types";
 import { useQuery } from "./query";
@@ -27,9 +28,11 @@ function queryKey({
   owner,
   chainId,
   apikey,
-  to,
+  address,
+  abi,
+  functionName,
+  args,
   value,
-  data,
   isPaymaster = true,
 }: QueryKeyArgs & QueryKeyConfig) {
   return [
@@ -39,38 +42,62 @@ function queryKey({
       owner,
       chainId,
       apikey,
-      to,
+      address,
+      abi,
+      functionName,
+      args,
       value,
-      data,
       isPaymaster,
     },
   ] as const;
 }
 
 function queryFn({
-  queryKey: [{ account, owner, chainId, apikey, to, value, data, isPaymaster }],
+  queryKey: [
+    {
+      account,
+      owner,
+      chainId,
+      apikey,
+      address,
+      value,
+      isPaymaster,
+      abi,
+      functionName,
+      args,
+    },
+  ],
 }: QueryFunctionArgs<typeof queryKey>) {
+  if (account === undefined) {
+    throw new Error('account is required, leave "" for account creation');
+  }
   if (!chainId) {
-    throw new Error("ChainId is required");
+    throw new Error("chainId is required");
   }
   if (!apikey) {
-    throw new Error("API key is required");
+    throw new Error("api key is required");
   }
-  if (!to) {
-    throw new Error("To is required");
+  if (!address) {
+    throw new Error("address is required");
   }
-  if (!data) {
-    throw new Error("Data is required");
+  if (!abi) {
+    throw new Error("abi is required");
   }
-  const txValue = value || "0";
+  if (!functionName) {
+    throw new Error("functionName is required");
+  }
+
+  const callValue = value || "0";
   return getUnsignedUserOperation({
     account,
     owner,
     chainId,
     apikey,
-    to,
-    value: txValue,
-    data,
+    address,
+    value: callValue,
+    abi,
+    functionName,
+    args,
     isPaymaster,
   });
 }
@@ -79,75 +106,48 @@ export function usePrepareUserOperation({
   account,
   owner,
   chainId,
-  to,
+  address,
   value,
-  data,
+  abi,
+  functionName,
+  args,
   isPaymaster,
 }: UsePrepareUserOperationArgs) {
   const config = useConfig();
+  const { chain } = useNetwork();
+  const { address: ownerAddress } = useAccount();
   const apikey = config.apikey;
 
   const queryKey_ = React.useMemo(
     () =>
       queryKey({
         account,
-        owner,
-        chainId,
+        owner: owner || ownerAddress,
+        chainId: chainId || chain?.id,
         apikey: apikey,
-        to,
+        address,
         value,
-        data,
+        abi,
+        functionName,
+        args,
         isPaymaster,
       }),
-    [account, owner, chainId, apikey, to, value, data, isPaymaster]
+    [
+      account,
+      owner,
+      chainId,
+      apikey,
+      address,
+      value,
+      abi,
+      functionName,
+      args,
+      isPaymaster,
+      chain,
+      ownerAddress,
+    ]
   );
 
   const smartAccountsQuery = useQuery(queryKey_, queryFn, {});
   return smartAccountsQuery;
-
-  // const {
-  //   data: userop,
-  //   error,
-  //   isError,
-  //   isIdle,
-  //   isLoading,
-  //   isSuccess,
-  //   mutate,
-  //   mutateAsync,
-  //   reset,
-  //   status,
-  //   variables,
-  // } = useMutation(
-  //   mutationKey({
-  //     account,
-  //     owner,
-  //     chainId,
-  //     apikey: apikey,
-  //     to,
-  //     value,
-  //     data,
-  //     isPaymaster,
-  //   }),
-  //   mutationFn,
-  //   {}
-  // );
-
-  // const write = React.useMemo(() => {
-  //   return () => {};
-  // }, [account, owner, chainId, to, value, data]);
-
-  // return {
-  //   data: userop,
-  //   error,
-  //   isError,
-  //   isIdle,
-  //   isLoading,
-  //   isSuccess,
-  //   mutate,
-  //   mutateAsync,
-  //   reset,
-  //   status,
-  //   variables,
-  //   write,
-  // };
 }
