@@ -1,4 +1,5 @@
 export {
+  useCreateSmartAccount,
   usePrepareUserOperation,
   useSendUserOperation,
   useSmartAccounts,

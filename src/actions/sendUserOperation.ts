@@ -40,7 +40,7 @@ export async function sendUserOperation({
   };
   const res = await axios.request(unsigned_options);
   if (res.status !== 200) {
-    throw new Error(`Failed to get unsigned user operation: ${res.data}`);
+    throw new Error(`Failed to send user operation: ${res.data}`);
   }
   return res.data;
 }

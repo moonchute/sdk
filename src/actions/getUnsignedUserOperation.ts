@@ -44,7 +44,7 @@ export async function getUnsignedUserOperation({
     address,
     functionName,
     args,
-    account,
+    account: account === "0x" ? undefined : account,
   });
 
   const calldata = encodeFunctionData({

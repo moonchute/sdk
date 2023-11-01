@@ -40,7 +40,6 @@ function mutationFn(config: UseSendUserOperationArgs) {
     throw new Error("Config is required");
   }
   const { userOp, userOpHash, chainId, accountType, apikey } = config;
-  console.log("fn apikey", apikey);
 
   if (!chainId) {
     throw new Error("ChainId is required");
