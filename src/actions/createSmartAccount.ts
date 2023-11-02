@@ -1,17 +1,16 @@
 import type { Abi } from "abitype";
 import type { Address } from "viem";
+import { SimulateContractParameters } from "viem";
 import { getUnsignedUserOperation } from "./getUnsignedUserOperation";
 import { sendUserOperation } from "./sendUserOperation";
 
-export type CreateSmartAccountArgs = {
+export type CreateSmartAccountConfig<
+  TAbi extends Abi | readonly unknown[] = Abi,
+  TFunctionName extends string = string
+> = Omit<SimulateContractParameters<TAbi, TFunctionName>, "chain"> & {
   owner: Address;
   chainId: number;
   apikey: string;
-  address: Address;
-  value?: bigint;
-  abi: Abi;
-  functionName: string;
-  args?: any[];
 };
 
 export type CreateSmartAccountResult = {
@@ -19,21 +18,20 @@ export type CreateSmartAccountResult = {
 };
 
 export async function createSmartAccount(
-  args: CreateSmartAccountArgs
+  args: CreateSmartAccountConfig
 ): Promise<CreateSmartAccountResult> {
   const {
     owner,
     chainId,
-    apikey,
     address,
     value,
     abi,
     functionName,
     args: functionArgs,
+    apikey,
   } = args;
 
   const unsignedRes = await getUnsignedUserOperation({
-    account: "0x",
     owner,
     chainId,
     address,

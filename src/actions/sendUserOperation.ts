@@ -42,5 +42,7 @@ export async function sendUserOperation({
   if (res.status !== 200) {
     throw new Error(`Failed to send user operation: ${res.data}`);
   }
-  return res.data;
+  return {
+    userOpHash: res.data,
+  };
 }

@@ -1,7 +1,9 @@
+import type { Abi } from "abitype";
 import * as React from "react";
+import type { GetFunctionArgs } from "viem";
 import { useAccount, useNetwork } from "wagmi";
 import {
-  CreateSmartAccountArgs,
+  CreateSmartAccountConfig,
   CreateSmartAccountResult,
   createSmartAccount,
 } from "../actions/createSmartAccount";
@@ -9,13 +11,24 @@ import { useConfig } from "../context";
 import { useMutation } from "./query";
 
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
-type WithOptional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
-export type UseCreateSmartAccountArgs = Partial<
-  WithOptional<CreateSmartAccountArgs, "apikey"> | undefined
->;
+type PartialBy<TType, TKeys extends keyof TType> = Partial<Pick<TType, TKeys>> &
+  Omit<TType, TKeys>;
 
-export type UseCreateSmartAccountConfig = Partial<CreateSmartAccountArgs>;
+type UseCreateSmartAccountArgs<
+  TAbi extends Abi | readonly unknown[] = Abi,
+  TFunctionName extends string = string
+> = PartialBy<
+  CreateSmartAccountConfig,
+  "abi" | "address" | "functionName" | "apikey" | "chainId" | "owner"
+> &
+  Partial<GetFunctionArgs<TAbi, TFunctionName>>;
 
+export type UseCreateSmartAccountConfig<
+  TAbi extends Abi | readonly unknown[] = Abi,
+  TFunctionName extends string = string
+> = Omit<UseCreateSmartAccountArgs<TAbi, TFunctionName>, "abi"> & {
+  abi: TAbi;
+};
 type MutationFn<TReturnType> = (() => TReturnType) | undefined;
 
 function mutationKey({ ...config }: UseCreateSmartAccountArgs) {
@@ -30,7 +43,7 @@ function mutationKey({ ...config }: UseCreateSmartAccountArgs) {
       apikey,
       address,
       value,
-      abi,
+      abi: abi as Abi,
       functionName,
       args,
     },
@@ -67,14 +80,17 @@ function mutationFn(config: UseCreateSmartAccountArgs) {
     chainId,
     address,
     value,
-    abi,
+    abi: abi as Abi,
     functionName,
     args,
     apikey,
   });
 }
 
-export function useCreateSmartAccount(config: UseCreateSmartAccountConfig) {
+export function useCreateSmartAccount<
+  TAbi extends Abi | readonly unknown[],
+  TFunctionName extends string
+>(config: UseCreateSmartAccountConfig<TAbi, TFunctionName>) {
   const moonchuteConfig = useConfig();
   const apikey = moonchuteConfig.store.getState().apikey;
   const { chain } = useNetwork();
@@ -94,11 +110,11 @@ export function useCreateSmartAccount(config: UseCreateSmartAccountConfig) {
     variables,
   } = useMutation(
     mutationKey({
-      ...(config as UseCreateSmartAccountArgs),
+      ...config,
       apikey,
       owner: ownerAddress,
       chainId: chain?.id,
-    }),
+    } as UseCreateSmartAccountArgs),
     mutationFn,
     {}
   );
@@ -117,7 +133,7 @@ export function useCreateSmartAccount(config: UseCreateSmartAccountConfig) {
         apikey,
         address,
         value,
-        abi,
+        abi: abi as Abi,
         functionName,
         args,
       });

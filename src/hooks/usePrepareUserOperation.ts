@@ -1,5 +1,4 @@
 import type { Abi } from "abitype";
-import * as React from "react";
 import type { GetFunctionArgs } from "viem";
 import { isAddress } from "viem";
 import { useAccount, useNetwork } from "wagmi";
@@ -15,7 +14,6 @@ import { useQuery } from "./query";
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 type PartialBy<TType, TKeys extends keyof TType> = Partial<Pick<TType, TKeys>> &
   Omit<TType, TKeys>;
-// type WithOptional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 export type UsePrepareUserOperationConfig<
   TAbi extends Abi | readonly unknown[] = Abi,
@@ -116,24 +114,22 @@ export function usePrepareUserOperation<TAbi extends Abi | readonly unknown[]>({
   const { address: ownerAddress } = useAccount();
   const apikey = config.apikey;
 
-  const queryKey_ = React.useMemo(
-    () =>
-      queryKey({
-        account,
-        owner: ownerAddress,
-        chainId: chain?.id,
-        address,
-        value,
-        functionName,
-        args: args as readonly unknown[],
-      }),
-    [account, address, value, functionName, chain, ownerAddress, args]
-  );
-
-  const smartAccountsQuery = useQuery(
-    queryKey_,
+  const prepareUserOperationQuery = useQuery(
+    queryKey({
+      account,
+      owner: ownerAddress,
+      chainId: chain?.id,
+      address,
+      value,
+      functionName,
+      args: args as readonly unknown[],
+    }),
     queryFn({ abi: abi as Abi, apikey }),
     {}
   );
-  return smartAccountsQuery;
+  return Object.assign(prepareUserOperationQuery, {
+    config: {
+      ...prepareUserOperationQuery.data,
+    } as GetUnsignedUserOperationResult,
+  });
 }
