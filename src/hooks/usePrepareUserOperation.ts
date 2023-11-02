@@ -1,7 +1,10 @@
+import type { Abi } from "abitype";
 import * as React from "react";
+import type { GetFunctionArgs } from "viem";
+import { isAddress } from "viem";
 import { useAccount, useNetwork } from "wagmi";
 import {
-  GetUnsignedUserOperationArgs,
+  GetUnsignedUserOperationConfig,
   GetUnsignedUserOperationResult,
   getUnsignedUserOperation,
 } from "../actions/getUnsignedUserOperation";
@@ -10,30 +13,36 @@ import type { QueryConfig, QueryFunctionArgs } from "../types";
 import { useQuery } from "./query";
 
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
-type WithOptional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
-export type UsePrepareUserOperationArgs = Partial<
-  WithOptional<GetUnsignedUserOperationArgs, "apikey">
->;
+type PartialBy<TType, TKeys extends keyof TType> = Partial<Pick<TType, TKeys>> &
+  Omit<TType, TKeys>;
+// type WithOptional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
-export type UsePrepareUserOperationConfig = QueryConfig<
-  GetUnsignedUserOperationResult,
-  Error
->;
+export type UsePrepareUserOperationConfig<
+  TAbi extends Abi | readonly unknown[] = Abi,
+  TFunctionName extends string = string
+> = PartialBy<
+  Omit<
+    GetUnsignedUserOperationConfig<TAbi, TFunctionName>,
+    "apikey" | "chainId" | "owner"
+  >,
+  "abi" | "address" | "functionName"
+> &
+  Partial<GetFunctionArgs<TAbi, TFunctionName>> &
+  QueryConfig<GetUnsignedUserOperationResult, Error>;
 
-type QueryKeyArgs = UsePrepareUserOperationArgs;
+type QueryKeyArgs = Partial<
+  Omit<GetUnsignedUserOperationConfig, "abi" | "apikey">
+>;
 type QueryKeyConfig = Pick<UsePrepareUserOperationConfig, "scopeKey">;
 
 function queryKey({
   account,
   owner,
   chainId,
-  apikey,
   address,
-  abi,
   functionName,
   args,
   value,
-  isPaymaster = true,
 }: QueryKeyArgs & QueryKeyConfig) {
   return [
     {
@@ -41,78 +50,67 @@ function queryKey({
       account,
       owner,
       chainId,
-      apikey,
       address,
-      abi,
       functionName,
       args,
       value,
-      isPaymaster,
     },
   ] as const;
 }
-
 function queryFn({
-  queryKey: [
-    {
+  abi,
+  apikey,
+}: {
+  abi?: Abi | readonly unknown[];
+  apikey?: string;
+}) {
+  return ({
+    queryKey: [{ account, owner, address, chainId, value, functionName, args }],
+  }: QueryFunctionArgs<typeof queryKey>) => {
+    if (!account && (!owner || !isAddress(owner))) {
+      throw new Error("owner is required for creating account");
+    }
+    if (account && !isAddress(account)) {
+      throw new Error("account is not a valid address");
+    }
+    if (!address) {
+      throw new Error("address is required");
+    }
+    if (!abi) {
+      throw new Error("abi is required");
+    }
+    if (!functionName) {
+      throw new Error("functionName is required");
+    }
+    if (!apikey) {
+      throw new Error("apikey is required");
+    }
+    if (!chainId) {
+      throw new Error("chainId is required");
+    }
+
+    return getUnsignedUserOperation({
       account,
       owner,
       chainId,
       apikey,
       address,
       value,
-      isPaymaster,
-      abi,
+      abi: abi as Abi,
       functionName,
       args,
-    },
-  ],
-}: QueryFunctionArgs<typeof queryKey>) {
-  if (account === undefined) {
-    throw new Error('account is required, leave "" for account creation');
-  }
-  if (!chainId) {
-    throw new Error("chainId is required");
-  }
-  if (!apikey) {
-    throw new Error("api key is required");
-  }
-  if (!address) {
-    throw new Error("address is required");
-  }
-  if (!abi) {
-    throw new Error("abi is required");
-  }
-  if (!functionName) {
-    throw new Error("functionName is required");
-  }
-
-  const callValue = value || "0";
-  return getUnsignedUserOperation({
-    account,
-    owner,
-    chainId,
-    apikey,
-    address,
-    value: callValue,
-    abi,
-    functionName,
-    args,
-    isPaymaster,
-  });
+    });
+  };
 }
 
-export function usePrepareUserOperation({
+export function usePrepareUserOperation<TAbi extends Abi | readonly unknown[]>({
   account,
-  owner,
-  chainId,
   address,
   value,
   abi,
   functionName,
   args,
-  isPaymaster,
-}: UsePrepareUserOperationArgs) {
+}: UsePrepareUserOperationConfig<TAbi>) {
   const config = useConfig();
   const { chain } = useNetwork();
   const { address: ownerAddress } = useAccount();
@@ -122,32 +120,20 @@ export function usePrepareUserOperation({
     () =>
       queryKey({
         account,
-        owner: owner || ownerAddress,
-        chainId: chainId || chain?.id,
-        apikey: apikey,
+        owner: ownerAddress,
+        chainId: chain?.id,
         address,
         value,
-        abi,
         functionName,
-        args,
-        isPaymaster,
+        args: args as readonly unknown[],
       }),
-    [
-      account,
-      owner,
-      chainId,
-      apikey,
-      address,
-      value,
-      abi,
-      functionName,
-      args,
-      isPaymaster,
-      chain,
-      ownerAddress,
-    ]
+    [account, address, value, functionName, chain, ownerAddress, args]
   );
 
-  const smartAccountsQuery = useQuery(queryKey_, queryFn, {});
+  const smartAccountsQuery = useQuery(
+    queryKey_,
+    queryFn({ abi: abi as Abi, apikey }),
+    {}
+  );
   return smartAccountsQuery;
 }

@@ -5,6 +5,19 @@ import { usePrepareUserOperation } from "./usePrepareUserOperation";
 
 describe("usePrepareUserOperation", () => {
   beforeAll(() => {
+    vi.mock("wagmi", async () => {
+      const actual: any = await vi.importActual("wagmi");
+      return {
+        ...actual,
+        useAccount: vi.fn(() => "0x27FB75d177E01103827068357cbaBEDa12ed7e1C"),
+        useNetwork: vi.fn(() => ({
+          chain: {
+            id: 1,
+          },
+        })),
+      };
+    });
+
     vi.mock("../actions/getUnsignedUserOperation", () => ({
       getUnsignedUserOperation: vi.fn(() =>
         Promise.resolve({
@@ -33,11 +46,9 @@ describe("usePrepareUserOperation", () => {
   });
 
   it("mounts", async () => {
-    const account = "0x123456";
-    const owner = "0x345678";
-    const chainId = 1;
+    const account = "0x27FB75d177E01103827068357cbaBEDa12ed7e1C";
     const address = "0x456789";
-    const value = "0";
+    const value = 0n;
     const functionName = "mint";
     const abi: Abi = [
       {
@@ -54,18 +65,14 @@ describe("usePrepareUserOperation", () => {
         type: "function",
       },
     ];
-    const isPaymaster = false;
 
     const { result, waitFor } = renderHook(() =>
       usePrepareUserOperation({
         account,
-        owner,
-        chainId,
         address,
         value,
         abi,
         functionName,
-        isPaymaster,
       })
     );
     await waitFor(() => expect(result.current.isSuccess).toBeTruthy());

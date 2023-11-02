@@ -8,7 +8,7 @@ export type CreateSmartAccountArgs = {
   chainId: number;
   apikey: string;
   address: Address;
-  value?: string;
+  value?: bigint;
   abi: Abi;
   functionName: string;
   args?: any[];
@@ -37,12 +37,11 @@ export async function createSmartAccount(
     owner,
     chainId,
     address,
-    value: value || "0",
+    value,
     abi,
     functionName,
     args: functionArgs,
     apikey,
-    isPaymaster: true,
   });
 
   const { userOp, userOpHash, accountType } = unsignedRes;

@@ -5,6 +5,20 @@ import { useCreateSmartAccount } from "./useCreateSmartAccount"; // replace 'you
 
 describe("useCreateSmartAccount", () => {
   beforeAll(() => {
+    vi.mock("wagmi", async () => {
+      const actual: any = await vi.importActual("wagmi");
+      return {
+        ...actual,
+        useAccount: vi.fn(() => ({
+          address: "0x27FB75d177E01103827068357cbaBEDa12ed7e1C",
+        })),
+        useNetwork: vi.fn(() => ({
+          chain: {
+            id: 1,
+          },
+        })),
+      };
+    });
     vi.mock("../actions/createSmartAccount", () => ({
       createSmartAccount: vi.fn(() =>
         Promise.resolve({
@@ -43,10 +57,10 @@ describe("useCreateSmartAccount", () => {
     });
 
     it("prepared", async () => {
-      const owner: `0x${string}` = "0x345678";
+      const owner: `0x${string}` = "0x27FB75d177E01103827068357cbaBEDa12ed7e1C";
       const chainId = 1;
       const address: `0x${string}` = "0x456789";
-      const value = "0";
+      const value = 0n;
       const functionName = "mint";
       const abi: Abi = [
         {
@@ -70,6 +84,7 @@ describe("useCreateSmartAccount", () => {
         value,
         functionName,
         abi,
+        apikey: "123",
         // more properties...
       };
 
@@ -81,10 +96,7 @@ describe("useCreateSmartAccount", () => {
 
       await act(async () => result.current.write?.());
 
-      await waitFor(() => {
-        console.log(result.current);
-        expect(result.current.isSuccess).toBe(true);
-      });
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
     });
   });
 });

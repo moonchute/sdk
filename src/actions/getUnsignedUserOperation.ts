@@ -2,20 +2,17 @@ import { getPublicClient } from "@wagmi/core";
 import type { Abi } from "abitype";
 import axios from "axios";
 import type { Address } from "viem";
-import { encodeFunctionData } from "viem";
+import { encodeFunctionData, SimulateContractParameters } from "viem";
 import { userOperationType } from "../types";
 
-export type GetUnsignedUserOperationArgs = {
+export type GetUnsignedUserOperationConfig<
+  TAbi extends Abi | readonly unknown[] = Abi,
+  TFunctionName extends string = string
+> = Omit<SimulateContractParameters<TAbi, TFunctionName>, "chain"> & {
   account?: Address;
   owner?: Address;
   chainId: number;
   apikey: string;
-  address: Address;
-  value: string;
-  isPaymaster: boolean;
-  abi: Abi;
-  functionName: string;
-  args?: any[];
 };
 
 export type GetUnsignedUserOperationResult = {
@@ -35,8 +32,7 @@ export async function getUnsignedUserOperation({
   args,
   address,
   value,
-  isPaymaster = true,
-}: GetUnsignedUserOperationArgs): Promise<GetUnsignedUserOperationResult> {
+}: GetUnsignedUserOperationConfig): Promise<GetUnsignedUserOperationResult> {
   const publicClient = getPublicClient({ chainId });
 
   await publicClient.simulateContract({
@@ -45,7 +41,7 @@ export async function getUnsignedUserOperation({
     functionName,
     args,
     account: account === "0x" ? undefined : account,
-  });
+  } as SimulateContractParameters);
 
   const calldata = encodeFunctionData({
     abi,
@@ -69,7 +65,6 @@ export async function getUnsignedUserOperation({
           to: address,
           value: value || 0,
           data: calldata,
-          isPaymaster,
         },
       ],
     },
