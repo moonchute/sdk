@@ -39,7 +39,14 @@ export async function sendUserOperation({
       jsonrpc: "2.0",
       id: 1,
       method: "mc_sendUserOp",
-      params: [userOp, chainId, signature, accountType],
+      params: [
+        {
+          userOp,
+          chainId,
+          signature,
+          accountType,
+        },
+      ],
     },
   };
   const res = await axios.request(unsigned_options);
