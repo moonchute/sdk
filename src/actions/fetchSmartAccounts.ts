@@ -32,7 +32,12 @@ export async function fetchSmartAccounts({
       throw new Error("API key is required");
     }
     const { data } = await axios.get(
-      `https://api.moonchute.xyz/account?address=${address}&chainId=${chainId}&apiKey=${apikey}`
+      `https://api.moonchute.xyz/account?address=${address}&chainId=${chainId}`,
+      {
+        headers: {
+          "x-app-id": apikey,
+        },
+      }
     );
     smartAccount = data.smartAccount;
   } catch (err) {
