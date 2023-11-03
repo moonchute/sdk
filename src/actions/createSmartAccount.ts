@@ -10,7 +10,7 @@ export type CreateSmartAccountConfig<
 > = Omit<SimulateContractParameters<TAbi, TFunctionName>, "chain"> & {
   owner: Address;
   chainId: number;
-  apikey: string;
+  appId: string;
 };
 
 export type CreateSmartAccountResult = {
@@ -28,7 +28,7 @@ export async function createSmartAccount(
     abi,
     functionName,
     args: functionArgs,
-    apikey,
+    appId,
   } = args;
 
   const unsignedRes = await getUnsignedUserOperation({
@@ -39,7 +39,7 @@ export async function createSmartAccount(
     abi,
     functionName,
     args: functionArgs,
-    apikey,
+    appId,
   });
 
   const { userOp, userOpHash, accountType } = unsignedRes;
@@ -49,6 +49,6 @@ export async function createSmartAccount(
     userOpHash,
     chainId,
     accountType,
-    apikey,
+    appId,
   });
 }

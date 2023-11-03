@@ -80,19 +80,36 @@ describe("usePrepareUserOperation", () => {
     expect(data).toBeDefined();
     expect(res).toMatchInlineSnapshot(`
     {
-      "error": null,
-      "fetchStatus": "idle",
-      "isError": false,
-      "isFetched": true,
-      "isFetchedAfterMount": true,
-      "isFetching": false,
-      "isIdle": false,
-      "isLoading": false,
-      "isRefetching": false,
-      "isSuccess": true,
-      "refetch": [Function],
-      "status": "success",
-    }
+        "config": {
+          "accountType": 1,
+          "userOp": {
+            "callData": "0x",
+            "callGasLimit": "0x",
+            "initCode": "0x",
+            "maxFeePerGas": "0x",
+            "maxPriorityFeePerGas": "0x",
+            "nonce": "0",
+            "paymasterAndData": "0x",
+            "preVerificationGas": "0x",
+            "sender": "0x",
+            "signature": "0x",
+            "verificationGasLimit": "0x",
+          },
+          "userOpHash": "0x123456",
+        },
+        "error": null,
+        "fetchStatus": "idle",
+        "isError": false,
+        "isFetched": true,
+        "isFetchedAfterMount": true,
+        "isFetching": false,
+        "isIdle": false,
+        "isLoading": false,
+        "isRefetching": false,
+        "isSuccess": true,
+        "refetch": [Function],
+        "status": "success",
+      }
     `);
   });
 });

@@ -12,7 +12,7 @@ export type GetUnsignedUserOperationConfig<
   account?: Address;
   owner?: Address;
   chainId: number;
-  apikey: string;
+  appId: string;
 };
 
 export type GetUnsignedUserOperationResult = {
@@ -26,7 +26,7 @@ export async function getUnsignedUserOperation({
   account,
   owner,
   chainId,
-  apikey,
+  appId,
   abi,
   functionName,
   args,
@@ -55,7 +55,7 @@ export async function getUnsignedUserOperation({
     headers: {
       accept: "application/json",
       "content-type": "application/json",
-      "x-app-id": apikey,
+      "x-app-id": appId,
     },
     data: {
       jsonrpc: "2.0",

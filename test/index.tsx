@@ -35,7 +35,7 @@ type Props = { config?: ConfigWithQueryClient } & {
 };
 
 export function wrapper({
-  config = setupConfig({ queryClient, apiKey: "test" }),
+  config = setupConfig({ queryClient, appId: "test" }),
   ...rest
 }: Props = {}) {
   const { chains, publicClient, webSocketPublicClient } = configureChains(

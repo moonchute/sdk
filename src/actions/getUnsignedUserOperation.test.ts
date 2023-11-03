@@ -28,7 +28,7 @@ describe("getUnsignedUserOperation", () => {
       account: "0xSomeAccount",
       owner: "0xSomeOwner",
       chainId: 1,
-      apikey: "someApiKey",
+      appId: "someappId",
       address: "0xToAddress",
       value: "someValue",
       isPaymaster: true,
@@ -85,7 +85,7 @@ describe("getUnsignedUserOperation", () => {
     await expect(
       getUnsignedUserOperation({
         chainId: 1,
-        apikey: "someApiKey",
+        appId: "someappId",
         address: "0xToAddress",
         value: "someValue",
         isPaymaster: true,

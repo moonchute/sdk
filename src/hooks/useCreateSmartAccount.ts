@@ -19,7 +19,7 @@ type UseCreateSmartAccountArgs<
   TFunctionName extends string = string
 > = PartialBy<
   CreateSmartAccountConfig,
-  "abi" | "address" | "functionName" | "apikey" | "chainId" | "owner"
+  "abi" | "address" | "functionName" | "appId" | "chainId" | "owner"
 > &
   Partial<GetFunctionArgs<TAbi, TFunctionName>>;
 
@@ -32,7 +32,7 @@ export type UseCreateSmartAccountConfig<
 type MutationFn<TReturnType> = (() => TReturnType) | undefined;
 
 function mutationKey({ ...config }: UseCreateSmartAccountArgs) {
-  const { owner, chainId, apikey, address, value, abi, functionName, args } =
+  const { owner, chainId, appId, address, value, abi, functionName, args } =
     config;
 
   return [
@@ -40,7 +40,7 @@ function mutationKey({ ...config }: UseCreateSmartAccountArgs) {
       entity: "createSmartAccount",
       owner: owner,
       chainId: chainId,
-      apikey,
+      appId,
       address,
       value,
       abi: abi as Abi,
@@ -54,7 +54,7 @@ function mutationFn(config: UseCreateSmartAccountArgs) {
   if (!config) {
     throw new Error("Config is required");
   }
-  const { owner, chainId, apikey, address, value, abi, functionName, args } =
+  const { owner, chainId, appId, address, value, abi, functionName, args } =
     config;
 
   if (!owner) {
@@ -63,7 +63,7 @@ function mutationFn(config: UseCreateSmartAccountArgs) {
   if (!chainId) {
     throw new Error("ChainId is required");
   }
-  if (!apikey) {
+  if (!appId) {
     throw new Error("API key is required");
   }
   if (!address) {
@@ -83,7 +83,7 @@ function mutationFn(config: UseCreateSmartAccountArgs) {
     abi: abi as Abi,
     functionName,
     args,
-    apikey,
+    appId,
   });
 }
 
@@ -92,7 +92,7 @@ export function useCreateSmartAccount<
   TFunctionName extends string
 >(config: UseCreateSmartAccountConfig<TAbi, TFunctionName>) {
   const moonchuteConfig = useConfig();
-  const apikey = moonchuteConfig.store.getState().apikey;
+  const appId = moonchuteConfig.store.getState().appId;
   const { chain } = useNetwork();
   const { address: ownerAddress } = useAccount();
 
@@ -111,7 +111,7 @@ export function useCreateSmartAccount<
   } = useMutation(
     mutationKey({
       ...config,
-      apikey,
+      appId,
       owner: ownerAddress,
       chainId: chain?.id,
     } as UseCreateSmartAccountArgs),
@@ -123,14 +123,14 @@ export function useCreateSmartAccount<
     if (!config) return undefined;
     const { address, value, abi, functionName, args } = config;
 
-    if (!ownerAddress || !chain || !address || !abi || !functionName || !apikey)
+    if (!ownerAddress || !chain || !address || !abi || !functionName || !appId)
       return undefined;
 
     return () =>
       mutate({
         owner: ownerAddress,
         chainId: chain?.id,
-        apikey,
+        appId,
         address,
         value,
         abi: abi as Abi,
@@ -140,7 +140,7 @@ export function useCreateSmartAccount<
   }, [
     config,
     mutate,
-    apikey,
+    appId,
     ownerAddress,
     chain,
   ]) as MutationFn<CreateSmartAccountResult>;

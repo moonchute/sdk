@@ -8,7 +8,7 @@ export type SendUserOperationArgs = {
   userOpHash: `0x${string}`;
   chainId: number;
   accountType: number;
-  apikey: string;
+  appId: string;
 };
 
 export type SendUserOperationResult = {
@@ -20,7 +20,7 @@ export async function sendUserOperation({
   userOpHash,
   chainId,
   accountType,
-  apikey,
+  appId,
 }: SendUserOperationArgs): Promise<SendUserOperationResult> {
   const walletClient = await getWalletClient();
   if (!walletClient) throw new Error("Wallet client not found");
@@ -33,7 +33,7 @@ export async function sendUserOperation({
     headers: {
       accept: "application/json",
       "content-type": "application/json",
-      "x-app-id": apikey,
+      "x-app-id": appId,
     },
     data: {
       jsonrpc: "2.0",

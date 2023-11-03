@@ -84,7 +84,7 @@ describe("useCreateSmartAccount", () => {
         value,
         functionName,
         abi,
-        apikey: "123",
+        appId: "123",
         // more properties...
       };
 

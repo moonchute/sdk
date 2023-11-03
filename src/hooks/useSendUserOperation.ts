@@ -12,7 +12,7 @@ type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 type WithOptional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 export type UseSendUserOperationArgs = Partial<
-  WithOptional<SendUserOperationArgs, "apikey"> | undefined
+  WithOptional<SendUserOperationArgs, "appId"> | undefined
 >;
 
 export type UseSendUserOperationConfig =
@@ -21,7 +21,7 @@ export type UseSendUserOperationConfig =
 type MutationFn<TReturnType> = (() => TReturnType) | undefined;
 
 function mutationKey({ ...config }: UseSendUserOperationArgs) {
-  const { userOp, userOpHash, chainId, accountType, apikey } = config;
+  const { userOp, userOpHash, chainId, accountType, appId } = config;
 
   return [
     {
@@ -30,7 +30,7 @@ function mutationKey({ ...config }: UseSendUserOperationArgs) {
       userOpHash,
       chainId,
       accountType,
-      apikey,
+      appId,
     },
   ] as const;
 }
@@ -39,7 +39,7 @@ function mutationFn(config: UseSendUserOperationArgs) {
   if (!config) {
     throw new Error("Config is required");
   }
-  const { userOp, userOpHash, chainId, accountType, apikey } = config;
+  const { userOp, userOpHash, chainId, accountType, appId } = config;
 
   if (!chainId) {
     throw new Error("ChainId is required");
@@ -53,7 +53,7 @@ function mutationFn(config: UseSendUserOperationArgs) {
   if (!userOpHash) {
     throw new Error("User operation hash is required");
   }
-  if (!apikey) {
+  if (!appId) {
     throw new Error("API key is required");
   }
   return sendUserOperation({
@@ -61,13 +61,13 @@ function mutationFn(config: UseSendUserOperationArgs) {
     userOpHash,
     chainId,
     accountType,
-    apikey,
+    appId,
   });
 }
 
 export function useSendUserOperation(config: UseSendUserOperationConfig) {
   const moonchuteConfig = useConfig();
-  const apikey = moonchuteConfig.store.getState().apikey;
+  const appId = moonchuteConfig.store.getState().appId;
 
   const {
     data,
@@ -82,7 +82,7 @@ export function useSendUserOperation(config: UseSendUserOperationConfig) {
     status,
     variables,
   } = useMutation(
-    mutationKey({ ...(config as UseSendUserOperationArgs), apikey }),
+    mutationKey({ ...(config as UseSendUserOperationArgs), appId }),
     mutationFn,
     {}
   );
@@ -90,7 +90,7 @@ export function useSendUserOperation(config: UseSendUserOperationConfig) {
   const write = React.useMemo(() => {
     if (!config) return undefined;
     const { userOp, userOpHash, chainId, accountType } = config;
-    if (!userOp || !userOpHash || !chainId || !accountType || !apikey)
+    if (!userOp || !userOpHash || !chainId || !accountType || !appId)
       return undefined;
 
     return () =>
@@ -99,9 +99,9 @@ export function useSendUserOperation(config: UseSendUserOperationConfig) {
         userOpHash,
         chainId,
         accountType,
-        apikey,
+        appId,
       });
-  }, [config, mutate, apikey]) as MutationFn<SendUserOperationResult>;
+  }, [config, mutate, appId]) as MutationFn<SendUserOperationResult>;
 
   return {
     data,

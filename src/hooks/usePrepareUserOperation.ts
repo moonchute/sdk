@@ -21,7 +21,7 @@ export type UsePrepareUserOperationConfig<
 > = PartialBy<
   Omit<
     GetUnsignedUserOperationConfig<TAbi, TFunctionName>,
-    "apikey" | "chainId" | "owner"
+    "appId" | "chainId" | "owner"
   >,
   "abi" | "address" | "functionName"
 > &
@@ -29,7 +29,7 @@ export type UsePrepareUserOperationConfig<
   QueryConfig<GetUnsignedUserOperationResult, Error>;
 
 type QueryKeyArgs = Partial<
-  Omit<GetUnsignedUserOperationConfig, "abi" | "apikey">
+  Omit<GetUnsignedUserOperationConfig, "abi" | "appId">
 >;
 type QueryKeyConfig = Pick<UsePrepareUserOperationConfig, "scopeKey">;
 
@@ -57,10 +57,10 @@ function queryKey({
 }
 function queryFn({
   abi,
-  apikey,
+  appId,
 }: {
   abi?: Abi | readonly unknown[];
-  apikey?: string;
+  appId?: string;
 }) {
   return ({
     queryKey: [{ account, owner, address, chainId, value, functionName, args }],
@@ -80,8 +80,8 @@ function queryFn({
     if (!functionName) {
       throw new Error("functionName is required");
     }
-    if (!apikey) {
-      throw new Error("apikey is required");
+    if (!appId) {
+      throw new Error("appId is required");
     }
     if (!chainId) {
       throw new Error("chainId is required");
@@ -91,7 +91,7 @@ function queryFn({
       account,
       owner,
       chainId,
-      apikey,
+      appId,
       address,
       value,
       abi: abi as Abi,
@@ -112,7 +112,7 @@ export function usePrepareUserOperation<TAbi extends Abi | readonly unknown[]>({
   const config = useConfig();
   const { chain } = useNetwork();
   const { address: ownerAddress } = useAccount();
-  const apikey = config.apikey;
+  const appId = config.appId;
 
   const prepareUserOperationQuery = useQuery(
     queryKey({
@@ -124,7 +124,7 @@ export function usePrepareUserOperation<TAbi extends Abi | readonly unknown[]>({
       functionName,
       args: args as readonly unknown[],
     }),
-    queryFn({ abi: abi as Abi, apikey }),
+    queryFn({ abi: abi as Abi, appId }),
     {}
   );
   return Object.assign(prepareUserOperationQuery, {

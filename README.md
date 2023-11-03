@@ -23,7 +23,7 @@ import { MoonChuteConfig, createMoonChuteConfig } from 'moonchute'
 
 
 const config = createMoonChuteConfig({
-  apiKey: <YOUR_MOONCHUTE_API_KEY>,
+  appId: <YOUR_MOONCHUTE_API_KEY>,
 });
 
 function App() {
