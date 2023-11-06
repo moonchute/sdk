@@ -2,7 +2,7 @@
   "name": "moonchute",
   "description": "React hook for account abstraction",
   "author": "MoonChute",
-  "version": "0.0.5-beta.3",
+  "version": "0.0.5-beta.4",
   "license": "MIT",
   "dependencies": {
     "@tanstack/query-sync-storage-persister": "^4.35.7",
