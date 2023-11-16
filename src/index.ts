@@ -1,4 +1,9 @@
-export { useSmartAccounts } from "./hooks";
+export {
+  useCreateSmartAccount,
+  usePrepareUserOperation,
+  useSendUserOperation,
+  useSmartAccounts,
+} from "./hooks";
 
 export { createMoonChuteConfig } from "./config";
 

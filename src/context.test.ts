@@ -77,7 +77,7 @@ describe("useConfig", () => {
       } finally {
         expect(err).toMatchInlineSnapshot(
           `
-          [Error: useConfig must be used within a ChuteConfig]
+          [Error: useConfig must be used within a MoonChuteConfig]
           `
         );
       }

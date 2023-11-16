@@ -3,6 +3,6 @@ import { createMoonChuteConfig } from "../src/config";
 
 type Config = CreateConfigParameters;
 
-export function setupConfig(config: Config = { apiKey: "test" }) {
+export function setupConfig(config: Config = { appId: "test" }) {
   return createMoonChuteConfig({ ...config });
 }

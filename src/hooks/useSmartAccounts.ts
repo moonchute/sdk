@@ -12,7 +12,7 @@ type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 type WithOptional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 export type UseSmartAccountsArgs = WithOptional<
   FetchSmartAccountsArgs,
-  "apikey"
+  "appId"
 >;
 
 export type UseSmartAccountsConfig = QueryConfig<
@@ -23,23 +23,23 @@ export type UseSmartAccountsConfig = QueryConfig<
 type QueryKeyArgs = FetchSmartAccountsArgs;
 type QueryKeyConfig = Pick<UseSmartAccountsConfig, "scopeKey">;
 
-function queryKey({ address, chainId, apikey }: QueryKeyArgs & QueryKeyConfig) {
-  return [{ entity: "smartaccounts", address, chainId, apikey }] as const;
+function queryKey({ address, chainId, appId }: QueryKeyArgs & QueryKeyConfig) {
+  return [{ entity: "smartaccounts", address, chainId, appId }] as const;
 }
 
 function queryFn({
-  queryKey: [{ address, chainId, apikey }],
+  queryKey: [{ address, chainId, appId }],
 }: QueryFunctionArgs<typeof queryKey>) {
-  return fetchSmartAccounts({ address, chainId, apikey });
+  return fetchSmartAccounts({ address, chainId, appId });
 }
 
 export function useSmartAccounts({ address, chainId }: UseSmartAccountsArgs) {
   const config = useConfig();
-  const apikey = config.apikey;
+  const appId = config.appId;
 
   const queryKey_ = React.useMemo(
-    () => queryKey({ address, chainId, apikey: apikey }),
-    [address, chainId, apikey]
+    () => queryKey({ address, chainId, appId: appId }),
+    [address, chainId, appId]
   );
 
   const smartAccountsQuery = useQuery(queryKey_, queryFn, {});

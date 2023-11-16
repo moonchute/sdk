@@ -4,14 +4,14 @@ import { createStorage } from "./storage";
 
 describe("createConfig", () => {
   it("returns config", () => {
-    const config = createMoonChuteConfig({ apiKey: "test" });
+    const config = createMoonChuteConfig({ appId: "test" });
     expect(config).toBeInstanceOf(Config);
   });
 
   describe("config", () => {
     describe("storage", () => {
       it("default", () => {
-        const config = createMoonChuteConfig({ apiKey: "test" });
+        const config = createMoonChuteConfig({ appId: "test" });
         expect(config.storage).toMatchInlineSnapshot(`
           {
             "getItem": [Function],
@@ -26,7 +26,7 @@ describe("createConfig", () => {
           storage: createStorage({
             storage: window.localStorage,
           }),
-          apiKey: "test",
+          appId: "test",
         });
         expect(config.storage).toMatchInlineSnapshot(`
           {

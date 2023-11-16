@@ -8,7 +8,7 @@ import * as React from "react";
 import { WagmiConfig, configureChains, createConfig, mainnet } from "wagmi";
 import { publicProvider } from "wagmi/providers/public";
 import type { ConfigWithQueryClient } from "../src/config";
-import { ChuteConfig } from "../src/context";
+import { MoonChuteConfig } from "../src/context";
 import { setupConfig } from "./utils";
 
 export const queryClient = new QueryClient({
@@ -35,7 +35,7 @@ type Props = { config?: ConfigWithQueryClient } & {
 };
 
 export function wrapper({
-  config = setupConfig({ queryClient, apiKey: "test" }),
+  config = setupConfig({ queryClient, appId: "test" }),
   ...rest
 }: Props = {}) {
   const { chains, publicClient, webSocketPublicClient } = configureChains(
@@ -49,7 +49,7 @@ export function wrapper({
   });
   return (
     <WagmiConfig config={wagmiconfig}>
-      <ChuteConfig config={config} {...rest} />;
+      <MoonChuteConfig config={config} {...rest} />;
     </WagmiConfig>
   );
 }
@@ -81,3 +81,4 @@ export function renderHook<TResult, TProps>(
     waitFor: (utils as { waitFor?: typeof waitFor })?.waitFor ?? waitFor,
   };
 }
+export { act, cleanup } from "@testing-library/react";
