@@ -84,6 +84,9 @@ function queryFn({
         throw new Error("abi is required");
       }
     }
+    if (!functionName && !abi && !value) {
+      throw new Error("functionName or value is required");
+    }
 
     if (!appId) {
       throw new Error("appId is required");
