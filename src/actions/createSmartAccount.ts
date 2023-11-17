@@ -4,10 +4,16 @@ import { SimulateContractParameters } from "viem";
 import { getUnsignedUserOperation } from "./getUnsignedUserOperation";
 import { sendUserOperation } from "./sendUserOperation";
 
+type PartialBy<TType, TKeys extends keyof TType> = Partial<Pick<TType, TKeys>> &
+  Omit<TType, TKeys>;
+
 export type CreateSmartAccountConfig<
   TAbi extends Abi | readonly unknown[] = Abi,
   TFunctionName extends string = string
-> = Omit<SimulateContractParameters<TAbi, TFunctionName>, "chain"> & {
+> = PartialBy<
+  Omit<SimulateContractParameters<TAbi, TFunctionName>, "chain">,
+  "functionName"
+> & {
   owner: Address;
   chainId: number;
   appId: string;
