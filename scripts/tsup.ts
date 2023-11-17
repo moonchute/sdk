@@ -93,11 +93,11 @@ async function generateExports(entry: string[], noExport?: string[]) {
     const distSourceFile = `${fileWithoutExtension.replace(
       /^src\//g,
       "./dist/"
-    )}.mjs`;
+    )}.js`;
     const distTypesFile = `${fileWithoutExtension.replace(
       /^src\//g,
       "./dist/"
-    )}.d.mts`;
+    )}.d.ts`;
     exports[name] = {
       types: distTypesFile,
       default: distSourceFile,

@@ -74,12 +74,17 @@ function queryFn({
     if (!address) {
       throw new Error("address is required");
     }
-    if (!abi) {
-      throw new Error("abi is required");
+    if (abi) {
+      if (!functionName) {
+        throw new Error("functionName is required");
+      }
     }
-    if (!functionName) {
-      throw new Error("functionName is required");
+    if (functionName) {
+      if (!abi) {
+        throw new Error("abi is required");
+      }
     }
+
     if (!appId) {
       throw new Error("appId is required");
     }
