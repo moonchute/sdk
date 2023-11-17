@@ -2,7 +2,7 @@
   "name": "moonchute",
   "description": "React hook for account abstraction",
   "author": "MoonChute",
-  "version": "0.0.6-beta.0",
+  "version": "0.0.6-beta.1",
   "license": "MIT",
   "type": "module",
   "main": "dist/index.js",
