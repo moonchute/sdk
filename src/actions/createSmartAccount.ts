@@ -12,7 +12,7 @@ export type CreateSmartAccountConfig<
   TFunctionName extends string = string
 > = PartialBy<
   Omit<SimulateContractParameters<TAbi, TFunctionName>, "chain">,
-  "functionName"
+  "functionName" | "address"
 > & {
   owner: Address;
   chainId: number;
