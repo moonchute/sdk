@@ -15,7 +15,7 @@ export type GetUnsignedUserOperationConfig<
     SimulateContractParameters<TAbi, TFunctionName>,
     "chain" | "account" | "value"
   >,
-  "functionName"
+  "functionName" | "address"
 > & {
   account?: string;
   owner?: string;

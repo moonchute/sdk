@@ -27,7 +27,7 @@ export type UseCreateSmartAccountConfig<
   TAbi extends Abi | readonly unknown[] = Abi,
   TFunctionName extends string = string
 > = Omit<UseCreateSmartAccountArgs<TAbi, TFunctionName>, "abi"> & {
-  abi: TAbi;
+  abi?: TAbi;
 };
 type MutationFn<TReturnType> = (() => TReturnType) | undefined;
 
@@ -64,17 +64,21 @@ function mutationFn(config: UseCreateSmartAccountArgs) {
     throw new Error("ChainId is required");
   }
   if (!appId) {
-    throw new Error("API key is required");
+    throw new Error("APP ID is required");
   }
-  if (!address) {
-    throw new Error("Address is required");
+  if (address) {
+    if (abi) {
+      if (!functionName) {
+        throw new Error("functionName is required");
+      }
+    }
+    if (functionName) {
+      if (!abi) {
+        throw new Error("abi is required");
+      }
+    }
   }
-  if (!abi) {
-    throw new Error("ABI is required");
-  }
-  if (!functionName) {
-    throw new Error("Function name is required");
-  }
+
   return createSmartAccount({
     owner,
     chainId,
@@ -123,8 +127,11 @@ export function useCreateSmartAccount<
     if (!config) return undefined;
     const { address, value, abi, functionName, args } = config;
 
-    if (!ownerAddress || !chain || !address || !abi || !functionName || !appId)
-      return undefined;
+    if (!ownerAddress || !chain || !appId) return undefined;
+
+    if (address) {
+      if (!abi && !value) return undefined;
+    }
 
     return () =>
       mutate({
