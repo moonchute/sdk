@@ -2,7 +2,7 @@ import { getPublicClient } from "@wagmi/core";
 import axios from "axios";
 import { Mock, beforeEach, describe, expect, it, vi } from "vitest";
 import {
-  GetUnsignedUserOperationArgs,
+  GetUnsignedUserOperationConfig,
   getUnsignedUserOperation,
 } from "./getUnsignedUserOperation";
 
@@ -24,14 +24,13 @@ describe("getUnsignedUserOperation", () => {
   });
 
   it("should successfully get unsigned user operation", async () => {
-    const mockArgs: GetUnsignedUserOperationArgs = {
+    const mockArgs: GetUnsignedUserOperationConfig = {
       account: "0xSomeAccount",
       owner: "0xSomeOwner",
       chainId: 1,
       appId: "someappId",
       address: "0xToAddress",
-      value: "someValue",
-      isPaymaster: true,
+      value: 100n,
       abi: [
         {
           inputs: [],
@@ -87,8 +86,7 @@ describe("getUnsignedUserOperation", () => {
         chainId: 1,
         appId: "someappId",
         address: "0xToAddress",
-        value: "someValue",
-        isPaymaster: true,
+        value: 100n,
         abi: [
           {
             inputs: [],
